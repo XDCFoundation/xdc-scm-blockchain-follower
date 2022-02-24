@@ -1,11 +1,13 @@
 import Config from "../../../config";
 import AMQPController from "../../../library";
-import {amqpConstants} from "../../common/constants";
+import {amqpConstants, httpConstants} from "../../common/constants";
+import XdcService from "../../service/xdcService";
 
 export default class TransactionManager {
     async syncTransaction(web3Instance, transactions, timestamp) {
         if (!transactions || transactions.length <= 0 || !web3Instance) return;
         let txnList = await this.getLastTransactions(web3Instance, transactions, timestamp);
+        if (!txnList || !txnList.length) return;
         await AMQPController.insertInQueue(Config.TRANSACTION_EXCHANGE, Config.TRANSACTION_QUEUE, "", "", "", "", "", amqpConstants.exchangeType.FANOUT, amqpConstants.queueType.PUBLISHER_SUBSCRIBER_QUEUE, {
             operationType: "BLOCK_RECEIVED_FROM_FOLLOWER",
             payload: txnList
@@ -13,7 +15,7 @@ export default class TransactionManager {
     }
 
     async getLastTransactions(web3Instance, transactions, timestamp) {
-        const txnList = [];
+        let txnList = [];
         let txData;
         for (txData of transactions) {
             const receipt = await web3Instance.eth.getTransactionReceipt(txData.hash);
@@ -22,6 +24,13 @@ export default class TransactionManager {
             tx.transactionFee = Number(tx.gasPrice) * tx.gasUsed;
             txnList.push(tx)
         }
+        let contractArray = txnList.map(({contractAddress}) => contractAddress)
+        contractArray = new Set(contractArray);
+        lhtWebLog("getLastTransactions", `Txn received for `, contractArray)
+        const SCMSystemContracts = await XdcService.getSCMSystemContracts(contractArray)
+        if (!SCMSystemContracts || !SCMSystemContracts.length) return []
+        lhtWebLog("getLastTransactions", `Saving Txn for `, SCMSystemContracts)
+        txnList = txnList.filter(txnObj => SCMSystemContracts.includes(txnObj.contractAddress))
         return txnList;
     }
 
