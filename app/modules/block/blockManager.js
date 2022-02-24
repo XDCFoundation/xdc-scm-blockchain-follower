@@ -14,7 +14,7 @@ export default class BlockManager {
 }
 const startListener = (web3) => {
     newBlocks = web3.eth.subscribe("newBlockHeaders", (error, result) =>
-        lhtWebLog("listenBlocks", error ? "Unable to subscribe for newBlockHeaders" : "Subscribed to newBlockHeaders", error || result));
+        lhtWebLog("listenBlocks", error ? "Unable to subscribe for newBlockHeaders" : "Subscribed to newBlockHeaders", error));
 }
 
 const listenEvents = (web3Instance) => {
