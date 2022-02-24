@@ -6,7 +6,10 @@ export default class TransactionManager {
     async syncTransaction(web3Instance, transactions, timestamp) {
         if (!transactions || transactions.length <= 0 || !web3Instance) return;
         let txnList = await this.getLastTransactions(web3Instance, transactions, timestamp);
-        await AMQPController.insertInQueue(Config.BLOCKCHAIN_FOLLOWER_TXN_EXCHANGE, Config.BLOCKCHAIN_FOLLOWER_TXN_QUEUE, "", "", "", "", "", amqpConstants.exchangeType.FANOUT, amqpConstants.queueType.PUBLISHER_SUBSCRIBER_QUEUE, {txnList});
+        await AMQPController.insertInQueue(Config.TRANSACTION_EXCHANGE, Config.TRANSACTION_QUEUE, "", "", "", "", "", amqpConstants.exchangeType.FANOUT, amqpConstants.queueType.PUBLISHER_SUBSCRIBER_QUEUE, {
+            operationType: "BLOCK_RECEIVED_FROM_FOLLOWER",
+            payload: txnList
+        });
     }
 
     async getLastTransactions(web3Instance, transactions, timestamp) {
