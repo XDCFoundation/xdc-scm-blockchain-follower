@@ -82,6 +82,6 @@ export default class Utils {
    * @constructor
    */
   static lhtLog (functionName, message, payload, developerAlias, logType = 'INFO') {
-    console.log(`[ ${Utils.getFormattedDate()} ] ${logType}: ${functionName}: ${message}: ${JSON.stringify(payload)}: Developer : ${developerAlias}`)
+    console.log(`[${Utils.getFormattedDate()}] ${logType}: ${functionName}: ${message}: ${JSON.stringify(payload)}: Developer : ${developerAlias}`)
   }
 }
