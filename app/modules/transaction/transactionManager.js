@@ -5,7 +5,10 @@ import XdcService from "../../service/xdcService";
 
 export default class TransactionManager {
     async syncTransaction(web3Instance, transactions, timestamp) {
-        if (!transactions || transactions.length <= 0 || !web3Instance) return;
+        if (!transactions || transactions.length <= 0 || !web3Instance) {
+            lhtWebLog("syncTransaction", "Error in syncTransaction", {web3Instance, transactions}, "AyushK", "ERROR")
+            return;
+        }
         let txnList = await this.getLastTransactions(web3Instance, transactions, timestamp);
         if (!txnList || !txnList.length) return;
         await AMQPController.insertInQueue(Config.TRANSACTION_EXCHANGE, Config.TRANSACTION_QUEUE, "", "", "", "", "", amqpConstants.exchangeType.FANOUT, amqpConstants.queueType.PUBLISHER_SUBSCRIBER_QUEUE, {
