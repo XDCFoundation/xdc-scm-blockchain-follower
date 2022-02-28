@@ -5,22 +5,22 @@ let newBlocks;
 export default class BlockManager {
     async listenBlocks(web3Instance) {
         try {
-            startListener(web3Instance);
+            await startListener(web3Instance);
             listenEvents(web3Instance);
         } catch (error) {
-            lhtWebLog("listenBlocks error", "Error in newBlockHeaders subscriber", error, "AyushK", httpConstants.LOG_LEVEL_TYPE.ERROR)
+            lhtWebLog("listenBlocks error", "Error in newBlockHeaders subscriber", error, "AyushK", "ERROR")
         }
     }
 }
 const startListener = (web3) => {
     newBlocks = web3.eth.subscribe("newBlockHeaders", (error, result) =>
-        lhtWebLog("listenBlocks", error ? "Unable to subscribe for newBlockHeaders" : "Subscribed to newBlockHeaders", error));
+        lhtWebLog("listenBlocks", error ? "Unable to subscribe for newBlockHeaders" : "Subscribed to newBlockHeaders", error, "AyushK", error ? "ERROR" : "INFO"));
 }
 
 const listenEvents = (web3Instance) => {
     newBlocks.on("data", (blockHeader) => processBlockHeader(blockHeader, web3Instance));
     newBlocks.on("error", (error) => {
-        lhtWebLog("listenBlocks error", "Error in newBlockHeaders subscriber", error, "AyushK", httpConstants.LOG_LEVEL_TYPE.ERROR)
+        lhtWebLog("listenBlocks error", "Error in newBlockHeaders subscriber", error, "AyushK", "ERROR");
         startListener()
     });
 }
