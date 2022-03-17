@@ -20,7 +20,20 @@ export default class WebSocketService {
            )
         } catch (err) {
             console.log("webSocketConnection err", err);
-            global.web3 = new Web3((url));
+            global.web3 = new Web3(new Web3.providers.WebsocketProvider(url,
+                {
+                    clientConfig: {
+                        keepalive: true,
+                        keepaliveInterval: 60000,
+                    },
+                    reconnect: {
+                        auto: true,
+                        delay: 2500,
+                        onTimeout: true,
+                    }
+                }
+                )
+           )
         }
     }
 }
