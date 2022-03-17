@@ -23,7 +23,7 @@ export default class TransactionManager {
         for (txData of transactions) {
             const receipt = await web3Instance.eth.getTransactionReceipt(txData.hash);
             const tx = await this.normalizeTX(txData, receipt, timestamp);
-            tx.contractAddress = tx.contractAddress || tx.to;
+            tx.contractAddress = (tx.contractAddress) || (tx.to);
             tx.transactionFee = Number(tx.gasPrice) * tx.gasUsed;
             txnList.push(tx)
         }
