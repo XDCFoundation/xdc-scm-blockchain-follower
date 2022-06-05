@@ -44,14 +44,13 @@ export default class TransactionManager {
         if (receipt && receipt.contractAddress !== null) {
             contractAddress = receipt.contractAddress.toLowerCase();
         }
-
         let cumulativeGasUsed = 0;
         if (receipt && receipt.cumulativeGasUsed) cumulativeGasUsed = receipt.cumulativeGasUsed;
 
         let logs = [];
         if (receipt && receipt.logs.length > 0) logs = receipt.logs;
 
-        let status = true;
+        let status = false;
         if (receipt && receipt.status) {
             status = receipt.status;
         }
